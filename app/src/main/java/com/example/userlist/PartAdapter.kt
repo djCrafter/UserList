@@ -40,6 +40,9 @@ class PartAdapter(var items: List<User>, val callback: Callback) : RecyclerView.
             if(item.image != null) {
                 image.setImageBitmap(convertToBitmap(item.image!!))
             }
+            else{
+                image.setImageResource(R.drawable.unknown)
+            }
 
             itemView.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION) callback.onItemClicked(items[adapterPosition])

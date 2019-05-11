@@ -15,12 +15,10 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        var realm = Realm.getDefaultInstance()
-
         var intentThatStartedThisActivity = getIntent()
         var userId = intentThatStartedThisActivity.getLongExtra("ID", 0)
 
-        user = UserRealmCRUD.readUserById(userId, realm)!!
+        user = RealmObject.readUserById(userId)!!
         setData()
     }
 

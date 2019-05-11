@@ -3,16 +3,14 @@ package com.example.userlist
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
-import android.widget.Toast
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var realm : Realm
     lateinit var adapter: PartAdapter
     lateinit var defaultUserList: DefaultUserList
 
@@ -21,16 +19,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        RealmObject.initBase(this)
 
-        Realm.init(this)
-        realm =  Realm.getDefaultInstance()
-
-        if(realm.isEmpty) {
+        if(RealmObject.isEmpty()) {
             defaultUserList = DefaultUserList(this)
-            UserRealmCRUD.initData(realm, defaultUserList.getList())
+            RealmObject.initData(defaultUserList.getList())
         }
 
-        userList = UserRealmCRUD.readAllContacts(realm)
+        userList = RealmObject.readAllContacts()
 
         setRecyclerAdapter()
         add_button.setOnClickListener { addEditButtonHandler() }
@@ -58,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun addEditButtonHandler() {
         val intent = Intent(baseContext, EditActivity::class.java)
-        intent.putExtra("edit", false)
+        intent.putExtra("add", false)
         startActivity(intent)
     }
 
@@ -87,8 +83,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun deleteUser(item: MenuItem?) {
         if(item != null) {
-            UserRealmCRUD.deleteUser(userList[item.itemId].id, realm)
-            adapter.notifyDataSetChanged()
+            var dialog = AlertDialog.Builder(this)
+            dialog.setTitle("Delete user")
+                .setIcon(R.drawable.warning)
+                .setTitle("Delete this user?")
+                .setCancelable(false)
+                .setPositiveButton("Yes") {_, _ ->
+
+
+                   if(RealmObject.deleteUser(userList[item.itemId].id)) {
+                       var notifications = AppNotifications()
+                       var notifyIntent = Intent(this, MainActivity::class.java)
+                       notifications.makeNotifications(
+                           this, R.drawable.delete_icon, "User deleted",
+                           "The user has been deleted from the database", notifyIntent,  ++AppNotifications.notificationCounter)
+
+                       userList.removeAt(item.itemId)
+                       adapter.notifyDataSetChanged()
+                   }
+                }
+                .setNegativeButton("Cancel") {_, _ ->}
+            var alert = dialog.create()
+            alert.show()
         }
     }
 }

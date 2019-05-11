@@ -1,13 +1,19 @@
 package com.example.userlist
 
+import android.content.Context
 import io.realm.Realm
 import java.lang.Exception
 
-class UserRealmCRUD {
+object RealmObject {
 
-companion object {
+    lateinit var realm : Realm
 
-    fun createUser(user: User, realm: Realm) : Boolean {
+    fun initBase(context: Context) {
+        Realm.init(context)
+        realm = Realm.getDefaultInstance()
+    }
+
+    fun createUser(user: User) : Boolean {
       try {
           realm.executeTransaction {
               it.copyToRealm(user)
@@ -20,7 +26,7 @@ companion object {
       }
     }
 
-    fun readUserById(id: Long, realm: Realm) : User? {
+    fun readUserById(id: Long) : User? {
           var user = User()
           try {
               realm.executeTransaction{
@@ -33,7 +39,7 @@ companion object {
         return user
     }
 
-    fun readAllContacts(realm: Realm) : ArrayList<User> {
+    fun readAllContacts() : ArrayList<User> {
         var userList = ArrayList<User>()
         try{
             realm.executeTransaction{
@@ -50,7 +56,7 @@ companion object {
     }
 
 
-    fun updateUser(user: User, realm: Realm) : Boolean {
+    fun updateUser(user: User) : Boolean {
         try{
             realm.executeTransaction {
                 it.copyToRealmOrUpdate(user)
@@ -63,8 +69,7 @@ companion object {
         }
     }
 
-    fun deleteUser(id: Long, realm: Realm) : Boolean {
-
+    fun deleteUser(id: Long) : Boolean {
          try{
             realm.executeTransaction{
                 it.where(User :: class.java).equalTo("id", id).findFirst()!!.deleteFromRealm()
@@ -77,7 +82,7 @@ companion object {
          }
     }
 
-    fun getNewId(realm: Realm) : Int {
+    fun getNewId() : Int {
         var id = 0
         try {
             realm.executeTransaction {
@@ -90,10 +95,10 @@ companion object {
         return id
     }
 
-    fun initData(realm: Realm, defaulUserList: ArrayList<User>): Boolean {
+    fun initData(defaulUserList: ArrayList<User>): Boolean {
         try {
                for(user in defaulUserList) {
-                   createUser(user, realm)
+                   createUser(user)
                }
         } catch (ex: Exception) {
             print(ex)
@@ -101,5 +106,8 @@ companion object {
         }
         return true
     }
-}
+
+    fun isEmpty() : Boolean {
+       return realm.isEmpty
+    }
 }
