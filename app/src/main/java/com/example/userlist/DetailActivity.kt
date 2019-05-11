@@ -31,6 +31,9 @@ class DetailActivity : AppCompatActivity() {
         if(user.image != null) {
             detail_image.setImageBitmap(convertToBitmap(user.image!!))
         }
+        else {
+            detail_image.setImageResource(R.drawable.unknown)
+        }
     }
 
     private fun convertToBitmap(byteArray: ByteArray) : Bitmap {
