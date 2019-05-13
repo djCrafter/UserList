@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_edit.*
 class EditActivity : AppCompatActivity() {
 
     private var editingMode = false
-    private lateinit var image : ByteArray
+    private var image : ByteArray? = null
     var id : Long = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +22,10 @@ class EditActivity : AppCompatActivity() {
         if(intent.hasExtra("edit")) {
             id = intent.getLongExtra("id", 0)
            var user = RealmObject.readUserById(id)!!
-            image = user.image!!
+
+            if(image != null) {
+                image = user.image!!
+            }
 
             editingMode = true
             setFields(user)
@@ -42,7 +45,11 @@ class EditActivity : AppCompatActivity() {
 
            if(RealmObject.updateUser(user)){
                var notifications = AppNotifications()
-               var notifyIntent = Intent(this, MainActivity::class.java)
+               var notifyIntent = Intent(this, EditActivity::class.java)
+               notifyIntent.putExtra("edit", true)
+               notifyIntent.putExtra("id", user.id)
+
+
                notifications.makeNotifications(
                    this, R.drawable.edit_icon, "User data edited.",
                    "User data edited", notifyIntent,  ++AppNotifications.notificationCounter
@@ -55,7 +62,9 @@ class EditActivity : AppCompatActivity() {
 
            if(RealmObject.createUser(user)) {
                var notifications = AppNotifications()
-               var notifyIntent = Intent(this, MainActivity::class.java)
+               var notifyIntent = Intent(this, DetailActivity::class.java)
+               notifyIntent.putExtra("ID", user.id)
+
                notifications.makeNotifications(
                    this, R.drawable.add_icon, "Create user.",
                    "New user created.", notifyIntent,  ++AppNotifications.notificationCounter)
