@@ -19,12 +19,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        RealmObject.initBase(this)
 
-        if(RealmObject.isEmpty()) {
-            defaultUserList = DefaultUserList(this)
-            RealmObject.initData(defaultUserList.getList())
-        }
+//        RealmObject.initBase(this)
+//        if(RealmObject.isEmpty()) {
+//            defaultUserList = DefaultUserList(this)
+//            RealmObject.initData(defaultUserList.getUserList())
+//        }
 
         userList = RealmObject.readAllContacts()
 
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
                    if(RealmObject.deleteUser(userList[item.itemId].id)) {
                        var notifications = AppNotifications()
-                       var notifyIntent = Intent(this, MainActivity::class.java)
+                       var notifyIntent = Intent(this, LoginActivity::class.java)
                        notifications.makeNotifications(
                            this, R.drawable.delete_icon, "User deleted",
                            "The user has been deleted from the database", notifyIntent,  ++AppNotifications.notificationCounter)

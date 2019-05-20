@@ -23,9 +23,8 @@ class EditActivity : AppCompatActivity() {
             id = intent.getLongExtra("id", 0)
            var user = RealmObject.readUserById(id)!!
 
-            if(image != null) {
-                image = user.image!!
-            }
+
+            image = user.image!!
 
             editingMode = true
             setFields(user)
@@ -45,10 +44,8 @@ class EditActivity : AppCompatActivity() {
 
            if(RealmObject.updateUser(user)){
                var notifications = AppNotifications()
-               var notifyIntent = Intent(this, EditActivity::class.java)
-               notifyIntent.putExtra("edit", true)
-               notifyIntent.putExtra("id", user.id)
-
+               var notifyIntent = Intent(baseContext, LoginActivity::class.java)
+               notifyIntent.putExtra("edit", user.id)
 
                notifications.makeNotifications(
                    this, R.drawable.edit_icon, "User data edited.",
@@ -62,14 +59,15 @@ class EditActivity : AppCompatActivity() {
 
            if(RealmObject.createUser(user)) {
                var notifications = AppNotifications()
-               var notifyIntent = Intent(this, DetailActivity::class.java)
-               notifyIntent.putExtra("ID", user.id)
+               var notifyIntent = Intent(baseContext, LoginActivity::class.java)
+               notifyIntent.putExtra("userCreate", user.id)
 
                notifications.makeNotifications(
                    this, R.drawable.add_icon, "Create user.",
                    "New user created.", notifyIntent,  ++AppNotifications.notificationCounter)
            }
        }
+
         val intent = Intent(baseContext, MainActivity::class.java)
         startActivity(intent)
     }

@@ -7,6 +7,7 @@ import java.lang.Exception
 object RealmObject {
 
     lateinit var realm : Realm
+    var isAuthenticate = false
 
     fun initBase(context: Context) {
         Realm.init(context)
@@ -26,6 +27,20 @@ object RealmObject {
       }
     }
 
+    fun createAppUser(appUser: AppUser) : Boolean {
+        try {
+            realm.executeTransaction {
+                it.copyToRealm(appUser)
+            }
+            return true
+        }
+        catch (ex: Exception){
+            println(ex)
+            return false
+        }
+    }
+
+
     fun readUserById(id: Long) : User? {
           var user = User()
           try {
@@ -38,6 +53,19 @@ object RealmObject {
           }
         return user
     }
+
+    fun readAppUserByEmail(email: String) : AppUser? {
+        var appUser = AppUser()
+        try {
+            realm.executeTransaction {
+                appUser = it.where(AppUser::class.java).equalTo("email", email).findFirst()!!
+            }
+        } catch (ex: Exception) {
+            println(ex)
+        }
+        return appUser
+    }
+
 
     fun readAllContacts() : ArrayList<User> {
         var userList = ArrayList<User>()
@@ -95,9 +123,11 @@ object RealmObject {
         return id
     }
 
-    fun initData(defaulUserList: ArrayList<User>): Boolean {
+    fun initData(defaulUserList: ArrayList<User>, defaultAppUser: AppUser): Boolean {
         try {
-               for(user in defaulUserList) {
+            createAppUser(defaultAppUser)
+
+            for(user in defaulUserList) {
                    createUser(user)
                }
         } catch (ex: Exception) {
@@ -110,4 +140,7 @@ object RealmObject {
     fun isEmpty() : Boolean {
        return realm.isEmpty
     }
+
+
+
 }

@@ -35,7 +35,7 @@ class AppNotifications {
    fun makeNotifications(context: Context, icon: Int, contentTitle: String, contentText: String, intent: Intent, notificationId: Int){
       var contentIntent = PendingIntent.getActivity(context,
          0, intent,
-         PendingIntent.FLAG_IMMUTABLE)
+         PendingIntent.FLAG_CANCEL_CURRENT)
       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
          createNotificationChannel(context)
          var builder = NotificationCompat.Builder(context, CHANNEL_ID.toString())

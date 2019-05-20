@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream
 
 class DefaultUserList(val context: Context) {
 
-    fun getList() : ArrayList<User> {
+    fun getUserList() : ArrayList<User> {
        var list = ArrayList<User>()
 
         val text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut " +
